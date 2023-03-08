@@ -1,21 +1,24 @@
 import React from 'react'
 import dynamic from 'next/dynamic'
-
 import EditorRender from '../components/EditorRender'
 const Editor = dynamic(() => import('../components/Editor'), { ssr: false })
 
 export default function Home() {
   const [data, setData] = React.useState()
   React.useEffect(() => {
-    const url = 'http://localhost:3000/api/defaultData'
+    const url = 'http://localhost:3000/api/sitios'
     async function handlerData(url) {
       const response = await fetch(url)
       if (response.ok) {
-        setData(await response.json())
-        // console.log(data)
+        window.localStorage.setItem('data', await response.text())
+        setData(JSON.parse(window.localStorage.getItem('data')))
       }
     }
-    handlerData(url)
+    if (!window.localStorage.getItem('data')) {
+      handlerData(url)
+    } else {
+      setData(JSON.parse(window.localStorage.getItem('data')))
+    }
   }, [])
   return (
     <>
